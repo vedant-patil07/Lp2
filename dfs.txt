@@ -1,0 +1,88 @@
+#include<iostream>
+#include<queue>
+#include<stack>
+#include<map>
+#include<list>
+#include<fstream> // for file handling
+using namespace std;
+
+class graph{
+    public:
+        map<int,list<int>> adj;
+        map<int,bool> visited;
+        queue<int> q;
+        void addEdge(int src,int dest);
+        void dfs(int node);
+        void bfs();
+};
+
+void graph::addEdge(int src, int dest){
+    adj[src].push_back(dest);
+    adj[dest].push_back(src);
+}
+
+void graph::dfs(int node){
+    visited[node]=true;
+    cout<<node<<" ";
+    for(int i: adj[node]){
+        if(!visited[i])
+            dfs(i);
+    }
+}
+
+void graph::bfs(){
+    if(q.empty()){
+        return;
+    }
+    int node=q.front();
+    q.pop();
+    cout<<node<<" ";
+    for(int i: adj[node]){
+        if(!visited[i]){
+            visited[i]=true;
+            q.push(i);
+        }
+    }
+    bfs();
+}
+
+int main(){
+    ifstream inFile; // Declare input file stream object
+    inFile.open("input.txt"); // Open input file
+    if (!inFile) {
+        cerr << "Unable to open file input.txt";
+        exit(1);   // call system to stop
+    }
+
+    int num_testcases;
+    inFile >> num_testcases;
+
+    for (int t = 0; t < num_testcases; ++t) {
+        graph g;
+        int edges, src, dest;
+        inFile >> edges;
+        for (int i = 0; i < edges; ++i) {
+            inFile >> src >> dest;
+            g.addEdge(src, dest);
+        }
+
+        int ch;
+        cout << "Test case " << t + 1 << ":\n";
+        cout << "Enter 0 to perform DFS and 1 to perform BFS: ";
+        cin >> ch;
+        if (!ch){
+            cout << "DFS on the given graph is :";
+            g.dfs(0);
+        } else{
+            cout << "BFS on the given graph is: ";
+            g.q.push(0);
+            g.visited[0] = true;
+            g.bfs();
+        }
+        cout << endl;
+    }
+
+    inFile.close(); // Close input file
+
+    return 0;
+}
